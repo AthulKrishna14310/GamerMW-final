@@ -72,7 +72,6 @@ public class HomeFragment extends Fragment {
         super.onStart();
         giveAwayLayout.setVisibility(View.GONE);
         progressBar.setVisibility(View.VISIBLE);
-
         giveAwayReference.get().addOnCompleteListener(task -> {
             try {
                 if(task.isSuccessful()){

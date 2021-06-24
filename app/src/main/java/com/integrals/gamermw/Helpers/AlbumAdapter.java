@@ -26,9 +26,16 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.integrals.gamermw.Activities.CommentActivity;
 import com.integrals.gamermw.Models.AlbumModel;
 import com.integrals.gamermw.R;
+import com.squareup.picasso.Picasso;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Dictionary;
+import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 public class AlbumAdapter
         extends RecyclerView.Adapter<AlbumAdapter.AlbumViewHolder> {
@@ -56,66 +63,50 @@ private Activity activity;
 
     @Override
     public void onBindViewHolder(@NonNull AlbumViewHolder holder, int position) {
-        RequestOptions requestOptions=new RequestOptions().centerCrop();
-        Glide.with(context)
+        Picasso.get()
                 .load(albumModels.get(position).getCoverPic())
-                .apply(requestOptions)
+                .placeholder(R.drawable.ic_baseline_image_24)
                 .into(holder.CoverPic);
         holder.albumTitle.setText(albumModels.get(position).getAlbumName());
         holder.likeBtn.setText(albumModels.get(position).getLikes());
         holder.share_link.setOnClickListener(view ->
                 firebaseActions.shareAlbumLink(albumModels.get(position).getYouTubeLink()));
 
-        holder.likeBtn.setOnClickListener(view -> {
-//            DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("Posts")
-//                    .child(albumModels.get(position).getId())
-//                    .child("Likes");
-//            databaseReference.push().setValue(FirebaseAuth.getInstance().getCurrentUser().getUid()).addOnCompleteListener(new OnCompleteListener<Void>() {
-//                @Override
-//                public void onComplete(@NonNull Task<Void> task) {
-//                    Toast.makeText(context,"Likes Posted",Toast.LENGTH_LONG).show();
-//                }
-//            });
-            ArrayList<String> arrayList=new ArrayList<>();
-
-            DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("Posts")
-                    .child(albumModels.get(position).getId())
-                    .child("Likes");
-            databaseReference.get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<DataSnapshot> task) {
-                    if (task.getResult().hasChildren()) {
-                        for (DataSnapshot dataSnapshot : task.getResult().getChildren()) {
-                            arrayList.add(dataSnapshot.getValue(true).toString());
-                        }
-                        if (arrayList.contains(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
-                            databaseReference.child(FirebaseAuth.getInstance().getCurrentUser().getUid()).removeValue()
-                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                        @Override
-                                        public void onComplete(@NonNull Task<Void> task) {
-                                            Constants.showToast("Removed Like", context);
-                                        }
-                                    });
-                        } else {
-                            databaseReference.push().setValue(FirebaseAuth.getInstance().getCurrentUser().getUid()).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                @Override
-                                public void onComplete(@NonNull Task<Void> task) {
-                                   Constants.showToast("Like Posted",context);
+        holder.likeBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                HashMap<String,String> data=new HashMap<>();
+                HashMap<String,String> reverseData=new HashMap<>();
+                DatabaseReference likereference=FirebaseDatabase.getInstance().getReference().child("Posts")
+                        .child(albumModels.get(position).getId())
+                        .child("Likes");
+                ArrayList<String>likedUsers=new ArrayList<>();
+                likereference.get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull @NotNull Task<DataSnapshot> task) {
+                        if(task.isSuccessful()) {
+                            if (task.getResult().hasChildren()) {
+                                for (DataSnapshot dataSnapshot : task.getResult().getChildren()) {
+                                    data.put(dataSnapshot.getKey(),dataSnapshot.getValue().toString());
+                                    reverseData.put(dataSnapshot.getValue().toString(),dataSnapshot.getKey());
                                 }
-                            });
+                                String currentUser = FirebaseAuth.getInstance().getCurrentUser().getUid();
+                                if (data.containsValue(currentUser)) {
+                                    removeLike(likereference,data,reverseData,currentUser);
+                                } else {
+                                    putLike(likereference);
+                                }
+                            }else{
+                                putLike(likereference);
+                            }
                         }
 
-                    }else{
-                        databaseReference.push().setValue(FirebaseAuth.getInstance().getCurrentUser().getUid()).addOnCompleteListener(new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-                                Constants.showToast("Like Posted",context);
-                            }
-                        });
                     }
-                }
-            });
+                });
+
+            }
         });
+
 
         holder.postComments.setOnClickListener(view -> context.startActivity(new Intent(context, CommentActivity.class)
         .putExtra("cover",albumModels.get(position).getCoverPic())
@@ -127,6 +118,30 @@ private Activity activity;
         });
 
 
+    }
+
+    private void removeLike(DatabaseReference likereference, HashMap<String, String> data,HashMap<String, String> reverseData, String currentUser) {
+        likereference.child(reverseData.get(currentUser))
+                .removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull @NotNull Task<Void> task) {
+                 if(task.isSuccessful()) {
+                     Constants.showLog("Like Removed");
+                 }
+
+            }
+        });
+    }
+
+    private void putLike(DatabaseReference likereference) {
+        likereference
+        .push()
+        .setValue(FirebaseAuth.getInstance().getCurrentUser().getUid()).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull @NotNull Task<Void> task) {
+                Constants.showLog("Liked");
+            }
+        });
     }
 
     @Override

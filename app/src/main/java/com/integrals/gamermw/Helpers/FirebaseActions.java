@@ -16,6 +16,7 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import androidx.annotation.NonNull;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -23,6 +24,7 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -31,15 +33,18 @@ import com.integrals.gamermw.Models.AlbumModel;
 import com.integrals.gamermw.R;
 
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.List;
 
 
 public class FirebaseActions {
     private Context context;
-    private List<AlbumModel> albumModels;
+    private ArrayList<AlbumModel> albumModels;
     private FirebaseActions thisClass;
     private Activity activity;
+    private ArrayList<String> keys;
 
     public FirebaseActions(Context context,Activity activity) {
         this.thisClass=this;
@@ -94,36 +99,42 @@ public class FirebaseActions {
                                  RecyclerView recyclerView,
                                  ProgressBar progressBar) {
         albumModels=new ArrayList<>();
+        albumModels.clear();
+        keys=new ArrayList<>();
+        keys.clear();
 
-        databaseReference.addValueEventListener(new ValueEventListener() {
+        AlbumAdapter albumAdapter=new AlbumAdapter(context,albumModels,thisClass,activity);
+        recyclerView.setAdapter(albumAdapter);
+
+        databaseReference.addChildEventListener(new ChildEventListener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                albumModels.clear();
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    String coverPic=null,youTubeLink=null,publishedON=null,albumName=null,details=null,likes="0";
-                    if (snapshot.hasChildren()) {
-                        if(snapshot.hasChild("CoverPic")){
-                             coverPic =snapshot.child("CoverPic").getValue().toString();
+            public void onChildAdded(@NonNull @NotNull DataSnapshot snapshot, @Nullable @org.jetbrains.annotations.Nullable String previousChildName) {
+                progressBar.setVisibility(View.GONE);
+                if(snapshot.hasChildren()) {
+                    Constants.showLog("Child Count ="+snapshot.getChildrenCount());
+                    Constants.showLog("Child ID ="+snapshot.getKey());
+                        String coverPic = null, youTubeLink = null, publishedON = null, albumName = null, details = null, likes = "0";
+                        if (snapshot.hasChild("CoverPic")) {
+                            coverPic = snapshot.child("CoverPic").getValue().toString();
                         }
-                        if(snapshot.hasChild("YoutubeLink")){
+                        if (snapshot.hasChild("YoutubeLink")) {
+                            youTubeLink = snapshot.child("YoutubeLink").getValue().toString();
+                        }
+                        if (snapshot.hasChild("PublishedON")) {
+                            publishedON = snapshot.child("PublishedON").getValue().toString();
+                        }
+                        if (snapshot.hasChild("AlbumName")) {
+                            albumName = snapshot.child("AlbumName").getValue().toString();
 
-                             youTubeLink =snapshot.child("YoutubeLink").getValue().toString();
-
                         }
-                        if(snapshot.hasChild("PublishedON")){
-                             publishedON=snapshot.child("PublishedON").getValue().toString();
-                        }
-                        if(snapshot.hasChild("AlbumName")){
-                             albumName =snapshot.child("AlbumName").getValue().toString();
-
-                        }
-                        if(snapshot.hasChild("Details")){
-                             details =snapshot.child("Details").getValue().toString();
+                        if (snapshot.hasChild("Details")) {
+                            details = snapshot.child("Details").getValue().toString();
 
                         }
                         if(snapshot.hasChild("Likes")){
                             likes=String.valueOf(snapshot.child("Likes").getChildrenCount());
                         }
+                        keys.add(snapshot.getKey());
                         albumModels.add(new AlbumModel(
                                 coverPic,
                                 youTubeLink,
@@ -133,22 +144,66 @@ public class FirebaseActions {
                                 snapshot.getKey(),
                                 likes+""
                         ));
-                    }
+                    albumAdapter.notifyDataSetChanged();
+
+                }else{
+                    progressBar.setVisibility(View.GONE);
+                }
+            }
+
+            @Override
+            public void onChildChanged(@NonNull @NotNull DataSnapshot snapshot, @Nullable @org.jetbrains.annotations.Nullable String previousChildName) {
+                String coverPic = null, youTubeLink = null, publishedON = null, albumName = null, details = null, likes = "0";
+                if (snapshot.hasChild("CoverPic")) {
+                    coverPic = snapshot.child("CoverPic").getValue().toString();
+                }
+                if (snapshot.hasChild("YoutubeLink")) {
+                    youTubeLink = snapshot.child("YoutubeLink").getValue().toString();
+                }
+                if (snapshot.hasChild("PublishedON")) {
+                    publishedON = snapshot.child("PublishedON").getValue().toString();
+                }
+                if (snapshot.hasChild("AlbumName")) {
+                    albumName = snapshot.child("AlbumName").getValue().toString();
 
                 }
-                AlbumAdapter albumAdapter=new AlbumAdapter(context,albumModels,
-                        thisClass,activity);
-                recyclerView.setAdapter(albumAdapter);
-                progressBar.setVisibility(View.GONE);
+                if (snapshot.hasChild("Details")) {
+                    details = snapshot.child("Details").getValue().toString();
+
+                }
+                if(snapshot.hasChild("Likes")){
+                    likes=String.valueOf(snapshot.child("Likes").getChildrenCount());
+                }
+                albumModels.set(keys.indexOf(snapshot.getKey()),
+                        new AlbumModel(
+                                coverPic,
+                                youTubeLink,
+                                publishedON,
+                                albumName,
+                                details,
+                                snapshot.getKey(),
+                                likes+""
+                        ));
+                albumAdapter.notifyDataSetChanged();
 
             }
 
             @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
+            public void onChildRemoved(@NonNull @NotNull DataSnapshot snapshot) {
 
             }
-        });
 
+            @Override
+            public void onChildMoved(@NonNull @NotNull DataSnapshot snapshot, @Nullable @org.jetbrains.annotations.Nullable String previousChildName) {
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull @NotNull DatabaseError error) {
+
+            }
+
+        });
     }
 
 }
