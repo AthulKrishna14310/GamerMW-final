@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="4dp"
+    android:layout_marginBottom="4dp"
+    android:elevation="0dp"
+    >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:id="@+id/coverImageLayout"
+            android:layout_width="match_parent"
+            android:layout_height="160dp"
+            android:layout_alignParentTop="true"
+
+            >
+            <ImageView
+                android:id="@+id/cover_pic"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="fitCenter"
+                android:layout_marginBottom="1dp" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/rlLayout"
+            android:layout_below="@+id/coverImageLayout">
+
+            <TextView
+                android:id="@+id/albumTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="false"
+                android:text="Song name"
+                android:padding="8dp"
+                style="@style/TextAppearance.MaterialComponents.Subtitle2"
+                android:ellipsize="end"
+
+                />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/album_options_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/rlLayout"
+            >
+
+            <ImageButton
+                android:id="@+id/post_comments"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="70dp"
+                android:src="@drawable/ic_baseline_add_comment_24"
+                android:tint="@color/colorPrimary"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                />
+            <TextView
+                android:id="@+id/post_like"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="96dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:layout_marginTop="8dp"
+                android:text="like"
+                android:layout_marginBottom="8dp"
+                />
+            <ImageButton
+                android:id="@+id/share_link"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_alignRight="@+id/post_comments"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="16dp"
+                android:src="@drawable/ic_baseline_share_24"
+                android:tint="@color/colorPrimary"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                />
+
+            <ImageButton
+                android:id="@+id/like_album"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignRight="@+id/post_comments"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="70dp"
+                android:visibility="gone"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_baseline_favorite_24" />
+
+        </RelativeLayout>
+    </RelativeLayout>
+</com.google.android.material.card.MaterialCardView>

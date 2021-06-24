@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Activities.SettingsActivity">
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/my_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:theme="@style/ThemeOverlay.MaterialComponents.ActionBar"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+        app:layout_constraintTop_toTopOf="parent"
+        >
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:id="@+id/settingbutton"
+                android:layout_marginEnd="16dp"
+                android:background="?selectableItemBackgroundBorderless"
+                android:layout_centerVertical="true"
+
+                />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/app_name"
+                style="@style/AppTheme"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
+                android:layout_marginStart="16dp"
+                android:layout_centerVertical="true"
+                android:layout_centerHorizontal="true"
+                />
+            <com.google.android.material.button.MaterialButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Update"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:id="@+id/update"
+                android:layout_alignParentEnd="true"
+                android:textColor="@color/colorAccent"
+                android:layout_centerVertical="true"
+                />
+
+
+
+        </RelativeLayout>
+
+    </com.google.android.material.appbar.MaterialToolbar>
+<com.google.android.material.progressindicator.LinearProgressIndicator
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/progress"
+    android:layout_below="@id/my_toolbar"
+    android:indeterminate="true"
+    android:indeterminateTint="@color/colorAccent"
+    />
+    <RelativeLayout
+        android:layout_width="180dp"
+        android:id="@+id/relativeLayout"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:visibility="visible"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/progress"
+        android:layout_height="180dp">
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:layout_width="164dp"
+            android:layout_height="164dp"
+            android:id="@+id/profilepic_update"
+            android:layout_centerInParent="true"
+            android:src="@drawable/ic_account_circle_black_24dp"
+
+            />
+
+        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="108dp"
+            app:icon="@drawable/ic_edit"
+            android:layout_marginRight="4dp"
+            app:iconTint="@color/colorPrimary"
+            style="@style/Widget.MaterialComponents.FloatingActionButton"
+            android:id="@+id/user_image_select"
+            android:layout_alignParentRight="true"
+            app:backgroundTint="@color/dark_bg"
+            />
+    </RelativeLayout>
+    <TextView
+        android:id="@+id/user_name_activity_textview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/relativeLayout"
+        android:layout_marginTop="8dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="20dp"
+        style="@style/TextAppearance.MaterialComponents.Subtitle1"
+        android:text="Type your name and an email for your account."
+        android:textColor="@color/colorPrimaryLight"
+        android:visibility="invisible"
+        android:gravity="center"/>
+
+
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:id="@+id/user_name_activity_edittext_layout"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/user_name_activity_textview"
+        app:hintEnabled="true"
+        app:boxBackgroundMode="filled"
+        android:padding="4dp"
+        app:boxCornerRadiusTopEnd="4dp"
+        app:boxCornerRadiusBottomEnd="4dp"
+        app:boxCornerRadiusBottomStart="4dp"
+        app:boxCornerRadiusTopStart="4dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        app:counterMaxLength="10"
+        app:counterEnabled="true"
+
+        >
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textStyle="normal"
+            android:textColor="@color/colorPrimary"
+            android:hint="Username"
+            android:inputType="text"
+            android:maxLength="10"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
+            android:id="@+id/user_name_activity_edittext"
+            />
+    </com.google.android.material.textfield.TextInputLayout>
+
+
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:id="@+id/user_state_activity_edittext_layout"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/user_name_activity_edittext_layout"
+        app:hintEnabled="true"
+        app:counterMaxLength="3"
+        app:counterEnabled="true"
+        app:boxBackgroundMode="filled"
+        app:boxCornerRadiusTopEnd="4dp"
+        app:boxCornerRadiusBottomEnd="4dp"
+        app:boxCornerRadiusBottomStart="4dp"
+        app:boxCornerRadiusTopStart="4dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        >
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:hint="State"
+            android:textColor="@color/colorPrimary"
+            android:maxLength="3"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
+            android:id="@+id/user_state_activity_edittext"
+            />
+    </com.google.android.material.textfield.TextInputLayout>
+    <com.google.android.material.button.MaterialButton
+        android:layout_width="match_parent"
+        android:id="@+id/signoutbtn"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        app:cornerRadius="@dimen/corner_radius_button"
+        android:layout_margin="16dp"
+        android:textColor="@color/colorAccent"
+        android:text="Log out"
+        android:padding="16dp"
+
+        />
+
+</RelativeLayout>

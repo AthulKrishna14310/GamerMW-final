@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".Fragments.groupchat.GroupChatFragment"
+    >
+
+    <com.google.android.material.progressindicator.LinearProgressIndicator
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/messageProgress"
+            android:layout_alignParentTop="true"
+            android:indeterminate="true" />
+
+    <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/list_message"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:transcriptMode="alwaysScroll"
+            android:duplicateParentState="true"
+            android:saveEnabled="true"
+            android:layout_above="@id/txtInputLayout"
+            android:layout_below="@id/messageProgress"
+            />
+
+
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/txtInputLayout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="10dp"
+            android:hint="@string/message_hint"
+            android:layout_alignParentBottom="true"
+            app:boxCornerRadiusTopStart="24dp"
+            app:boxCornerRadiusBottomEnd="24dp"
+            android:layout_toStartOf="@id/imageButton"
+            app:boxCornerRadiusTopEnd="24dp"
+            app:boxCornerRadiusBottomStart="24dp">
+        <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/user_message"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="12dp"
+                android:paddingBottom="12dp"
+                android:paddingLeft="8dp"
+                android:paddingRight="8dp"
+                style="@style/FirebaseUI.TextInputEditText"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
+
+                />
+
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+    <androidx.appcompat.widget.AppCompatImageButton
+            android:id="@+id/send_image"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="10dp"
+            android:background="?selectableItemBackgroundBorderless"
+            android:tint="@color/colorAccent"
+            app:contentPadding="16dp"
+            app:srcCompat="@drawable/ic_send" />
+
+    <androidx.appcompat.widget.AppCompatImageButton
+            android:id="@+id/imageButton"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/ic_baseline_image_24"
+            android:tint="@color/colorAccent"
+            android:layout_marginBottom="10dp"
+            android:background="?selectableItemBackgroundBorderless"
+            android:layout_toStartOf="@id/send_image"
+            android:layout_alignParentBottom="true" />
+
+</RelativeLayout>
