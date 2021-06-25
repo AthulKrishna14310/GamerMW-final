@@ -27,7 +27,7 @@
             android:layout_height="176dp"
             android:src="@drawable/ic_launcher_foreground"
             android:adjustViewBounds="true"
-            android:scaleType="fitCenter"
+            android:scaleType="centerCrop"
             android:id="@+id/imageView"/>
         <TextView
             android:layout_width="match_parent"

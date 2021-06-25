@@ -41,16 +41,19 @@ import java.util.List;
 
 public class FirebaseActions {
     private Context context;
-    private ArrayList<AlbumModel> albumModels;
+    private ArrayList<AlbumModel> albumModels=new ArrayList<>();
     private FirebaseActions thisClass;
     private Activity activity;
-    private ArrayList<String> keys;
-
-    public FirebaseActions(Context context,Activity activity) {
+    private ArrayList<String> keys=new ArrayList<>();
+    private AlbumAdapter albumAdapter;
+    private RecyclerView albumsView;
+    public FirebaseActions(Context context,Activity activity,RecyclerView recyclerView) {
         this.thisClass=this;
         this.context = context;
         this.activity=activity;
-
+        albumAdapter=new AlbumAdapter(context,albumModels,thisClass,activity);
+        albumsView=recyclerView;
+        albumsView.setAdapter(albumAdapter);
     }
 
 
@@ -81,7 +84,7 @@ public class FirebaseActions {
                 shareIntent.putExtra(Intent.EXTRA_STREAM, bitmapUri);
                 context.startActivity(shareIntent);
 
-                }
+    }
 
 
 
@@ -96,16 +99,9 @@ public class FirebaseActions {
     }
 
     public void loadRecyclerView(DatabaseReference databaseReference,
-                                 RecyclerView recyclerView,
                                  ProgressBar progressBar) {
-        albumModels=new ArrayList<>();
         albumModels.clear();
-        keys=new ArrayList<>();
         keys.clear();
-
-        AlbumAdapter albumAdapter=new AlbumAdapter(context,albumModels,thisClass,activity);
-        recyclerView.setAdapter(albumAdapter);
-
         databaseReference.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull @NotNull DataSnapshot snapshot, @Nullable @org.jetbrains.annotations.Nullable String previousChildName) {

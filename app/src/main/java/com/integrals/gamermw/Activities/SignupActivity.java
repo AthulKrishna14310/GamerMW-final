@@ -2,6 +2,7 @@ package com.integrals.gamermw.Activities;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
@@ -47,6 +48,7 @@ public class SignupActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
         auth = FirebaseAuth.getInstance();
         userInfo=FirebaseDatabase.getInstance();
         btnSignIn =     findViewById(R.id.sign_in_button);

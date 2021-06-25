@@ -41,11 +41,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Update"
-                style="@style/Widget.MaterialComponents.Button.TextButton"
+                style="@style/Widget.MaterialComponents.Button.UnelevatedButton"
                 android:id="@+id/update"
                 android:layout_alignParentEnd="true"
-                android:textColor="@color/colorAccent"
+                android:textColor="@color/colorPrimaryDark"
                 android:layout_centerVertical="true"
+                android:padding="8dp"
+                android:drawablePadding="8dp"
                 />
 
 

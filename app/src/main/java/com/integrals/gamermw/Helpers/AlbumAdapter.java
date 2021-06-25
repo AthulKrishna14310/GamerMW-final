@@ -71,17 +71,36 @@ private Activity activity;
         holder.likeBtn.setText(albumModels.get(position).getLikes());
         holder.share_link.setOnClickListener(view ->
                 firebaseActions.shareAlbumLink(albumModels.get(position).getYouTubeLink()));
+        DatabaseReference lR=FirebaseDatabase.getInstance().getReference().child("Posts")
+                .child(albumModels.get(position).getId())
+                .child("Likes");
+        lR.get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+            @Override
+            public void onComplete(@NonNull @NotNull Task<DataSnapshot> task) {
+                if(task.isSuccessful()) {
+                    ArrayList<String>likedUsers=new ArrayList<>();
+                    for (DataSnapshot dataSnapshot : task.getResult().getChildren()) {
+                        likedUsers.add(dataSnapshot.getValue().toString());
+                    }
+                    if(likedUsers.contains(FirebaseAuth.getInstance().getCurrentUser().getUid())){
+                        holder.likeBtn.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_like, 0, 0, 0);
+                    }else{
+                        holder.likeBtn.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_not_like, 0, 0, 0);
+                    }
+                }
+            }
+        });
 
         holder.likeBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 HashMap<String,String> data=new HashMap<>();
                 HashMap<String,String> reverseData=new HashMap<>();
-                DatabaseReference likereference=FirebaseDatabase.getInstance().getReference().child("Posts")
+                DatabaseReference likeReference=FirebaseDatabase.getInstance().getReference().child("Posts")
                         .child(albumModels.get(position).getId())
                         .child("Likes");
-                ArrayList<String>likedUsers=new ArrayList<>();
-                likereference.get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+
+                likeReference.get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
                     @Override
                     public void onComplete(@NonNull @NotNull Task<DataSnapshot> task) {
                         if(task.isSuccessful()) {
@@ -92,12 +111,12 @@ private Activity activity;
                                 }
                                 String currentUser = FirebaseAuth.getInstance().getCurrentUser().getUid();
                                 if (data.containsValue(currentUser)) {
-                                    removeLike(likereference,data,reverseData,currentUser);
+                                    removeLike(likeReference,data,reverseData,currentUser);
                                 } else {
-                                    putLike(likereference);
+                                    putLike(likeReference);
                                 }
                             }else{
-                                putLike(likereference);
+                                putLike(likeReference);
                             }
                         }
 

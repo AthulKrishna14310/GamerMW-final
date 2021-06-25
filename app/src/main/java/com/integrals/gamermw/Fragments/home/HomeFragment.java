@@ -51,7 +51,6 @@ public class HomeFragment extends Fragment {
                              ViewGroup container, Bundle savedInstanceState) {
         new ViewModelProvider(this).get(HomeViewModel.class);
         View root = inflater.inflate(R.layout.fragment_home, container, false);
-        firebaseActions=new FirebaseActions(getContext(),getActivity());
         recyclerView=root.findViewById(R.id.albumListRecyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity(),LinearLayoutManager.VERTICAL,false));
         recyclerView.setHasFixedSize(true);
@@ -64,13 +63,14 @@ public class HomeFragment extends Fragment {
         giveAwayLayout=root.findViewById(R.id.giveAwayLayout);
         navigateToWheel=root.findViewById(R.id.navigateWheel);
         tutorialCard=root.findViewById(R.id.tutorial);
+        firebaseActions=new FirebaseActions(getContext(),getActivity(),recyclerView);
+        giveAwayLayout.setVisibility(View.GONE);
         return root;
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        giveAwayLayout.setVisibility(View.GONE);
         progressBar.setVisibility(View.VISIBLE);
         giveAwayReference.get().addOnCompleteListener(task -> {
             try {
@@ -79,12 +79,12 @@ public class HomeFragment extends Fragment {
                     if(isFinished(when)){
                         Constants.showLog("Give away over");
                         giveAwayLayout.setVisibility(View.GONE);
-                        firebaseActions.loadRecyclerView(databaseReferenceAlbumList,recyclerView,progressBar);
+                        firebaseActions.loadRecyclerView(databaseReferenceAlbumList,progressBar);
                     }else{
                         giveAwayLayout.setVisibility(View.VISIBLE);
                         giveAwayTitle.setText("Give away on "+when);
                         initiateCounterTimer(when,giveAwayTimer);
-                        firebaseActions.loadRecyclerView(databaseReferenceAlbumList,recyclerView,progressBar);
+                        firebaseActions.loadRecyclerView(databaseReferenceAlbumList,progressBar);
                     }
 
                 }

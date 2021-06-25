@@ -16,9 +16,12 @@ import com.integrals.gamermw.Helpers.Constants;
 import com.integrals.gamermw.Models.ChatModel;
 import com.integrals.gamermw.Models.CommentModel;
 import com.integrals.gamermw.R;
+import com.squareup.picasso.Picasso;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -46,6 +49,7 @@ public class CommentActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
         setContentView(R.layout.activity_comment);
         title=getIntent().getStringExtra("title");
         cover=getIntent().getStringExtra("cover");
@@ -68,7 +72,9 @@ public class CommentActivity extends AppCompatActivity {
                 CommentActivity.this,
                 commentArrayList);
         progressBar.setVisibility(View.GONE);
-
+        Picasso.get()
+                .load(cover)
+                .into(appCompatImageView);
     }
 
     @Override
@@ -77,12 +83,6 @@ public class CommentActivity extends AppCompatActivity {
         fetchComment();
         titleTxt.setText(title);
         commentRecycler.setAdapter(commentAdapter);
-        RequestOptions requestOptions=new RequestOptions().centerCrop();
-        Glide.with(CommentActivity.this)
-                .load(cover)
-                .apply(requestOptions)
-                .into(appCompatImageView);
-
         sendImage.setOnClickListener(v -> {
             if(userComment.getText() != null){
                 if(!userComment.getText().toString().equals("") && userId != null){
@@ -92,8 +92,6 @@ public class CommentActivity extends AppCompatActivity {
                 }
             }
         });
-
-
 
     }
 

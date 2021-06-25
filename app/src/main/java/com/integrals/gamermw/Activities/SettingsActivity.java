@@ -2,6 +2,7 @@ package com.integrals.gamermw.Activities;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -59,6 +60,7 @@ private FirebaseStorage firebaseStorage;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
         setContentView(R.layout.activity_settings);
         logoutButton=findViewById(R.id.signoutbtn);
         firebaseAuth=FirebaseAuth.getInstance();
@@ -83,7 +85,6 @@ private FirebaseStorage firebaseStorage;
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 loadData(snapshot);
-
             }
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
@@ -97,7 +98,6 @@ private FirebaseStorage firebaseStorage;
 
 
         updateButton.setOnClickListener(v -> updateData());
-
         updateUserImage.setOnClickListener(v -> {
             CropImage.activity().start(SettingsActivity.this);
         });
@@ -136,9 +136,10 @@ private FirebaseStorage firebaseStorage;
     private void updateData() {
         databaseReference.child("user").child(userId).child(getString(R.string.dbusername))
                 .setValue(usernameInput.getText().toString()+"#"+stateInput.getText().toString().trim());
+
         databaseReference.child("user").child(userId).child(getString(R.string.dbstatenumber))
                 .setValue(stateInput.getText().toString().trim() + "");
-
+        updateButton.setText("Updated");
     }
 
     private void implementListners() {
@@ -150,11 +151,12 @@ private FirebaseStorage firebaseStorage;
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                updateButton.setVisibility(View.VISIBLE);
+
             }
 
             @Override
             public void afterTextChanged(Editable s) {
+                updateButton.setVisibility(View.VISIBLE);
 
             }
         });
@@ -167,13 +169,13 @@ private FirebaseStorage firebaseStorage;
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                updateButton.setVisibility(View.VISIBLE);
+
 
             }
 
             @Override
             public void afterTextChanged(Editable s) {
-
+                updateButton.setVisibility(View.VISIBLE);
             }
         });
     }

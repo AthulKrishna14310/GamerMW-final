@@ -2,8 +2,10 @@ package com.integrals.gamermw.Activities;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
@@ -15,7 +17,15 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.integrals.gamermw.Helpers.Constants;
+import com.integrals.gamermw.MainActivity;
 import com.integrals.gamermw.R;
+import com.thecode.aestheticdialogs.AestheticDialog;
+import com.thecode.aestheticdialogs.DialogAnimation;
+import com.thecode.aestheticdialogs.DialogStyle;
+import com.thecode.aestheticdialogs.DialogType;
+import com.thecode.aestheticdialogs.OnDialogClickListener;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,9 +37,12 @@ public class LuckyWheel extends AppCompatActivity {
     private ProgressBar progressBar;
     private String postID;
     private DatabaseReference postReference;
+    private DatabaseReference userReference;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
         setContentView(R.layout.activity_lucky_wheel);
         wheelView =findViewById(R.id.wheel);
         progressBar=findViewById(R.id.wheelProgress);
@@ -37,6 +50,7 @@ public class LuckyWheel extends AppCompatActivity {
         progressBar.setVisibility(View.GONE);
         details= FirebaseDatabase.getInstance().getReference().child("GiveAway");
         postReference=FirebaseDatabase.getInstance().getReference().child("Posts");
+        userReference=FirebaseDatabase.getInstance().getReference().child("user");
     }
 
     @Override
@@ -51,9 +65,34 @@ public class LuckyWheel extends AppCompatActivity {
             @Override
             public void onStopRotation(String item) {
                 Toast.makeText(getApplicationContext()," "+ item,Toast.LENGTH_LONG).show();
+                userReference.child(item).get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull @NotNull Task<DataSnapshot> task) {
+                        if(task.isSuccessful()){
+                            String winnerUser=task.getResult().child("username").getValue().toString();
+                            initiateDialog(winnerUser);
+                        }
+                    }
+                });
             }
         });
 
+    }
+
+    private void initiateDialog(String winnerUser) {
+        new AestheticDialog.Builder(this, DialogStyle.FLAT, DialogType.SUCCESS)
+                .setTitle("Winner "+winnerUser)
+                .setMessage("Message")
+                .setCancelable(false)
+                .setDarkMode(true)
+                .setGravity(Gravity.CENTER)
+                .setAnimation(DialogAnimation.SHRINK)
+                .setOnClickListener(new OnDialogClickListener() {
+                    @Override
+                    public void onClick(@NotNull AestheticDialog.Builder builder) {
+                        builder.dismiss();
+                    }
+                }).show();
     }
 
     private void fetchCommenters() {
