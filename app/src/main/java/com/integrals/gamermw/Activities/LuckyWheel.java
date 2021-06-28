@@ -17,6 +17,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.integrals.gamermw.Helpers.Constants;
+import com.integrals.gamermw.Helpers.CustomToast;
 import com.integrals.gamermw.MainActivity;
 import com.integrals.gamermw.R;
 import com.thecode.aestheticdialogs.AestheticDialog;
@@ -111,8 +112,10 @@ public class LuckyWheel extends AppCompatActivity {
                        }
                    }
                    wheelView.setItems(commenters);
-                   initiateWheel();
+                   progressBar.setVisibility(View.INVISIBLE);
                 });
+            }else{
+                new CustomToast(LuckyWheel.this).showErrorToast(task.getException().getMessage());
             }
         });
     }

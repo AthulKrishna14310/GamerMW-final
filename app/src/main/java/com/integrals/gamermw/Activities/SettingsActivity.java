@@ -32,6 +32,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.integrals.gamermw.Helpers.CustomToast;
 import com.integrals.gamermw.MainActivity;
 import com.integrals.gamermw.Models.ChatModel;
 import com.integrals.gamermw.R;
@@ -42,21 +43,21 @@ import com.theartofdev.edmodo.cropper.CropImage;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class SettingsActivity extends AppCompatActivity {
-private Button logoutButton;
-private FirebaseAuth firebaseAuth;
-private DatabaseReference databaseReference;
-private String userId;
-private String username;
-private String state;
-private String url;
-private EditText usernameInput;
-private EditText stateInput;
-private CircleImageView imageView;
-private MaterialButton updateButton;
-private LinearProgressIndicator progressIndicator;
-private ExtendedFloatingActionButton updateUserImage;
-private StorageReference storageReference;
-private FirebaseStorage firebaseStorage;
+    private Button logoutButton;
+    private FirebaseAuth firebaseAuth;
+    private DatabaseReference databaseReference;
+    private String userId;
+    private String username;
+    private String state;
+    private String url;
+    private EditText usernameInput;
+    private EditText stateInput;
+    private CircleImageView imageView;
+    private MaterialButton updateButton;
+    private LinearProgressIndicator progressIndicator;
+    private ExtendedFloatingActionButton updateUserImage;
+    private StorageReference storageReference;
+    private FirebaseStorage firebaseStorage;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -88,14 +89,13 @@ private FirebaseStorage firebaseStorage;
             }
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(getApplicationContext(), "Data retrieval failed", Toast.LENGTH_LONG).show();
+                new CustomToast(getApplicationContext()).showErrorToast(error.getMessage());
             }
         });
 
         logoutButton.setOnClickListener(v -> {
             logout();
         });
-
 
         updateButton.setOnClickListener(v -> updateData());
         updateUserImage.setOnClickListener(v -> {
@@ -121,6 +121,7 @@ private FirebaseStorage firebaseStorage;
                     @Override
                     public void onError(Exception e) {
                         progressIndicator.setVisibility(View.INVISIBLE);
+                        new CustomToast(SettingsActivity.this).showErrorToast(e.getMessage());
                     }
                 });
 
@@ -136,7 +137,6 @@ private FirebaseStorage firebaseStorage;
     private void updateData() {
         databaseReference.child("user").child(userId).child(getString(R.string.dbusername))
                 .setValue(usernameInput.getText().toString()+"#"+stateInput.getText().toString().trim());
-
         databaseReference.child("user").child(userId).child(getString(R.string.dbstatenumber))
                 .setValue(stateInput.getText().toString().trim() + "");
         updateButton.setText("Updated");
@@ -193,7 +193,7 @@ private FirebaseStorage firebaseStorage;
                 progressIndicator.setVisibility(View.VISIBLE);
                 uploadTask.addOnFailureListener(exception -> {
                     progressIndicator.setVisibility(View.INVISIBLE);
-                    Toast.makeText(getApplicationContext(), "Failed", Toast.LENGTH_LONG).show();
+                    new CustomToast(getApplicationContext()).showErrorToast(exception.getMessage());
                 }).addOnSuccessListener(taskSnapshot -> {
                     riversRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                         @Override
@@ -219,6 +219,7 @@ private FirebaseStorage firebaseStorage;
 
             } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
                 Exception error = result.getError();
+                new CustomToast(getApplicationContext()).showErrorToast(error.getMessage());
                 progressIndicator.setVisibility(View.INVISIBLE);
             }
         }

@@ -63,6 +63,8 @@ dependencies {
     implementation 'com.adefruandta.spinningwheel:spinningwheel:0.1.0'
     implementation 'com.squareup.picasso:picasso:2.71828'
     implementation 'com.github.jd-alexander:LikeButton:0.2.3'
+    implementation 'com.pranavpandey.android:dynamic-toasts:4.0.0'
+
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'

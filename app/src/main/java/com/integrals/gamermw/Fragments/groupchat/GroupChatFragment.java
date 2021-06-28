@@ -11,7 +11,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatImageButton;
@@ -34,6 +33,7 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.integrals.gamermw.Helpers.ChatAdapter;
 import com.integrals.gamermw.Helpers.Constants;
+import com.integrals.gamermw.Helpers.CustomToast;
 import com.integrals.gamermw.Models.ChatModel;
 import com.integrals.gamermw.R;
 import com.theartofdev.edmodo.cropper.CropImage;
@@ -61,6 +61,7 @@ public class GroupChatFragment extends Fragment {
     private static final ArrayList<String>ids=new ArrayList<>();
     private ChatAdapter chatAdapter;
     private Query query;
+
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_group_chat, container, false);
@@ -179,7 +180,7 @@ public class GroupChatFragment extends Fragment {
 
             } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
                 Exception error = result.getError();
-                Toast.makeText(getContext(),error.toString(),Toast.LENGTH_LONG).show();
+                new CustomToast(getContext()).showErrorToast(error.getMessage());
             }
         }
     }

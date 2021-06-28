@@ -16,6 +16,7 @@ import android.widget.Toast;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.integrals.gamermw.Helpers.CustomToast;
 import com.integrals.gamermw.R;
 
 public class ResetPasswordActivity extends AppCompatActivity {
@@ -47,29 +48,25 @@ public class ResetPasswordActivity extends AppCompatActivity {
         btnReset.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 String email = inputEmail.getText().toString().trim();
-
                 if (TextUtils.isEmpty(email)) {
-                    Toast.makeText(getApplication(), "Enter your registered email id", Toast.LENGTH_SHORT).show();
+                    new CustomToast(getApplicationContext()).showErrorToast("Enter your registered email id");
                     return;
                 }
-
                 progressBar.setVisibility(View.VISIBLE);
                 auth.sendPasswordResetEmail(email)
                         .addOnCompleteListener(new OnCompleteListener<Void>() {
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {
                                 if (task.isSuccessful()) {
-                                    Toast.makeText(ResetPasswordActivity.this, "We have sent you instructions to reset your password!", Toast.LENGTH_SHORT).show();
+                                    new CustomToast(getApplicationContext()).showSuccessToast("We have sent you instructions to reset your password!");
                                 } else {
-                                    Toast.makeText(ResetPasswordActivity.this, "Failed to send reset email!", Toast.LENGTH_SHORT).show();
+                                    new CustomToast(getApplicationContext()).showErrorToast(task.getException().getMessage());
                                 }
-
                                 progressBar.setVisibility(View.GONE);
                             }
                         });
-            }
+                }
         });
     }
 

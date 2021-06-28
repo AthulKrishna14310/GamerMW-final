@@ -13,6 +13,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.integrals.gamermw.Helpers.CommentAdapter;
 import com.integrals.gamermw.Helpers.Constants;
+import com.integrals.gamermw.Helpers.CustomToast;
 import com.integrals.gamermw.Models.ChatModel;
 import com.integrals.gamermw.Models.CommentModel;
 import com.integrals.gamermw.R;
@@ -106,6 +107,7 @@ public class CommentActivity extends AppCompatActivity {
                                 commentIds.clear();
                                 commentArrayList.clear();
                                 Constants.showLog("Fetch data received");
+
                                 for (DataSnapshot dataSnapshot : task.getResult().getChildren()) {
                                     String message = "", user = "";
                                     Long timestamp = Long.valueOf(0);
@@ -123,12 +125,15 @@ public class CommentActivity extends AppCompatActivity {
                                     commentArrayList.add(new CommentModel(message,user,timestamp));
                                     Constants.showLog("Data =>"+message+":"+user+":"+timestamp);
                                 }
+
                                 commentAdapter.notifyDataSetChanged();
                                 commentRecycler.scrollToPosition(commentArrayList.size() - 1);
                              }
                             progressBar.setVisibility(View.GONE);
                             initiateCommentUpdates();
 
+                        }else{
+                            new CustomToast(getApplicationContext()).showErrorToast(task.getException().getMessage());
                         }
                     });
         }else{
@@ -172,7 +177,7 @@ public class CommentActivity extends AppCompatActivity {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-
+                new CustomToast(getApplicationContext()).showErrorToast(error.getMessage());
             }
         });
 

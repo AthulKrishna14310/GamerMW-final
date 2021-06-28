@@ -11,9 +11,7 @@ public class Constants {
     public static final int MAX_ANGLE = 50;
     public static final int WHEEL_DURATION = 4000;
     public static final int INTERVELS = 50;
-
     public static void showLog(String message){
         Log.d(TAG,message);
     }
-    public static void showToast(String message, Context context){ Toast.makeText(context,message,Toast.LENGTH_LONG).show(); }
 }

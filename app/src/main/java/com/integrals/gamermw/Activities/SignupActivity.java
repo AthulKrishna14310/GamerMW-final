@@ -22,6 +22,7 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.FirebaseDatabase;
 import com.integrals.gamermw.Helpers.Constants;
+import com.integrals.gamermw.Helpers.CustomToast;
 import com.integrals.gamermw.R;
 
 public class SignupActivity extends AppCompatActivity {
@@ -41,8 +42,6 @@ public class SignupActivity extends AppCompatActivity {
     private String shelterPlayer;
     private String profilePic= Constants.PROFILE_PIC;
     private boolean checked=false;
-   // private ProgressDialog progressDialog;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,11 +58,7 @@ public class SignupActivity extends AppCompatActivity {
         userName=       findViewById(R.id.username);
         radioGroupLastShelter=findViewById(R.id.radiogroup);
         stateNumber=findViewById(R.id.stateNumber);
-
     }
-
-
-
     @Override
     protected void onStart() {
         super.onStart();
@@ -75,27 +70,21 @@ public class SignupActivity extends AppCompatActivity {
         radioGroupLastShelter.setOnCheckedChangeListener((group, checkedId) -> {
             if(group.getCheckedRadioButtonId()==R.id.yesRadio){
                 checked=true;
-                Log.d("ADHIN","yes");
                 findViewById(R.id.stateNumberLayout).setVisibility(View.VISIBLE);
                 stateNumber.setVisibility(View.VISIBLE);
             }else if(group.getCheckedRadioButtonId()==R.id.noRadio){
                 checked=true;
                 findViewById(R.id.stateNumberLayout).setVisibility(View.GONE);
                 stateNumber.setVisibility(View.GONE);
-                 Log.d("ADHIN","no");
-
             }
         });
-
-
-
         btnSignUp.setOnClickListener(v -> {
             email = inputEmail.getText().toString().trim();
             password = inputPassword.getText().toString().trim();
             userNameS=userName.getText().toString().trim();
 
             if(!checked){
-                Toast.makeText(getApplicationContext(),"Please check the field ",Toast.LENGTH_LONG).show();
+                new CustomToast(getApplicationContext()).showErrorToast("Please check the field");
                 return;
             }
             if(stateNumber.getVisibility()== View.VISIBLE){
@@ -103,22 +92,22 @@ public class SignupActivity extends AppCompatActivity {
             }
 
             if (TextUtils.isEmpty(email)) {
-                Toast.makeText(getApplicationContext(), "Enter email address!", Toast.LENGTH_SHORT).show();
+                new CustomToast(getApplicationContext()).showErrorToast("Enter Email Address");
                 return;
             }
 
             if (TextUtils.isEmpty(userNameS)) {
-                Toast.makeText(getApplicationContext(), "Enter username!", Toast.LENGTH_SHORT).show();
+                new CustomToast(getApplicationContext()).showErrorToast("Enter username");
                 return;
             }
 
             if (TextUtils.isEmpty(password)) {
-                Toast.makeText(getApplicationContext(), "Enter password!", Toast.LENGTH_SHORT).show();
+                new CustomToast(getApplicationContext()).showErrorToast("Enter Password");
                 return;
             }
 
             if (password.length() <=6) {
-                Toast.makeText(getApplicationContext(), "Password too short, enter minimum 6 characters!", Toast.LENGTH_SHORT).show();
+                new CustomToast(getApplicationContext()).showErrorToast("Password too short, enter minimum 6 characters");
                 return;
             }
             progressBar.setVisibility(View.VISIBLE);
@@ -127,24 +116,18 @@ public class SignupActivity extends AppCompatActivity {
                         .addOnCompleteListener(SignupActivity.this, new OnCompleteListener<AuthResult>() {
                             @Override
                             public void onComplete(@NonNull Task<AuthResult> task) {
-
                                 if (!task.isSuccessful()) {
                                     progressBar.setVisibility(View.GONE);
-                                    Toast.makeText(SignupActivity.this, "Authentication failed." + task.getException(),
-                                            Toast.LENGTH_SHORT).show();
+                                    new CustomToast(getApplicationContext()).showErrorToast("Authentication Failed. Please try again");
                                 } else {
-
                                     sentVerificationEmail();
                                     uploadData();
                                 }
                             }
                         });
-            }
-
+                 }
         });
-
     }
-
 
     private void sentVerificationEmail() {
         auth.getCurrentUser().sendEmailVerification().addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -152,13 +135,11 @@ public class SignupActivity extends AppCompatActivity {
                 public void onComplete(@NonNull Task<Void> task) {
                     if (task.isSuccessful()) {
                     } else {
-                        Toast.makeText(getApplicationContext(), "Registration failed. " +
-                                "Please try again", Toast.LENGTH_LONG).show();
+                        new CustomToast(getApplicationContext()).showErrorToast("Registration Failed. Please try again later.");
                     }
                 }
             });
     }
-
     private void uploadData() {
         userInfo.getReference().child("user").child(auth.getCurrentUser().getUid())
                 .child("email").setValue(email)
@@ -171,12 +152,13 @@ public class SignupActivity extends AppCompatActivity {
                                         .addOnCompleteListener(task -> {
                                             if(task.isSuccessful()){
                                                 progressBar.setVisibility(View.GONE);
-                                                Toast.makeText(getApplicationContext(),"Please verify your mail and login again.",Toast.LENGTH_LONG).show();
+                                                new CustomToast(getApplicationContext()).showSuccessToast("Please verify your mail and login again");
                                                 finish();
+                                            }else{
+                                                new CustomToast(getApplicationContext()).showErrorToast(task.getException().getMessage());
                                             }
                                         }))));
     }
-
     @Override
     protected void onDestroy() {
         super.onDestroy();

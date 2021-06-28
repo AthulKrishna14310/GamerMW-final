@@ -3,19 +3,20 @@ package com.integrals.gamermw.Helpers;
 import android.app.Activity;
 import android.content.Context;
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.AppCompatImageButton;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.view.LayoutInflater;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.RequestOptions;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -88,6 +89,36 @@ private Activity activity;
                         holder.likeBtn.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_not_like, 0, 0, 0);
                     }
                 }
+            }
+        });
+
+        holder.optionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                PopupMenu popupMenu=new PopupMenu(context,holder.optionButton);
+                MenuInflater inflater=popupMenu.getMenuInflater();
+                inflater.inflate(R.menu.card_menu,popupMenu.getMenu());
+                popupMenu.show();
+                popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        if(item.getItemId()==R.id.giveAwayAdd){
+                            Toast.makeText(context,"Add Give Away",Toast.LENGTH_SHORT).show();
+                        }else if(item.getItemId()==R.id.deletePost){
+                            FirebaseDatabase.getInstance().getReference().child("Posts").child(albumModels.get(position)
+                            .getId()).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull @NotNull Task<Void> task) {
+                                    if(task.isSuccessful()){
+                                        new CustomToast(context)
+                                                .showSuccessToast("Post Deleted.");
+                                    }
+                                }
+                            });
+                        }
+                        return false;
+                    }
+                });
             }
         });
 
@@ -174,6 +205,8 @@ private Activity activity;
         public TextView   likeBtn;
         public ImageButton share_link;
         public ImageButton postComments;
+        public AppCompatImageButton optionButton;
+
         public AlbumViewHolder(@NonNull View itemView) {
             super(itemView);
 
@@ -182,6 +215,7 @@ private Activity activity;
             albumTitle=itemView.findViewById(R.id.albumTitle);
             share_link=itemView.findViewById(R.id.share_link);
             likeBtn=itemView.findViewById(R.id.post_like);
+            optionButton=itemView.findViewById(R.id.cardOptions);
 
         }
     }

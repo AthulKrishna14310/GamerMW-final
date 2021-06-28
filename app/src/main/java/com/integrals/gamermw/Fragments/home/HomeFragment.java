@@ -5,6 +5,8 @@ import android.os.Bundle;
 
 import android.os.CountDownTimer;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
@@ -29,6 +31,8 @@ import com.integrals.gamermw.Helpers.FirebaseActions;
 import com.integrals.gamermw.Models.HomeViewModel;
 import com.integrals.gamermw.R;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -47,6 +51,7 @@ public class HomeFragment extends Fragment {
     private MaterialCardView giveAwayLayout;
     private AppCompatImageButton navigateToWheel;
     private MaterialCardView tutorialCard;
+
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         new ViewModelProvider(this).get(HomeViewModel.class);
@@ -65,13 +70,13 @@ public class HomeFragment extends Fragment {
         tutorialCard=root.findViewById(R.id.tutorial);
         firebaseActions=new FirebaseActions(getContext(),getActivity(),recyclerView);
         giveAwayLayout.setVisibility(View.GONE);
+        firebaseActions.loadRecyclerView(databaseReferenceAlbumList,progressBar);
         return root;
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        progressBar.setVisibility(View.VISIBLE);
         giveAwayReference.get().addOnCompleteListener(task -> {
             try {
                 if(task.isSuccessful()){
@@ -79,14 +84,11 @@ public class HomeFragment extends Fragment {
                     if(isFinished(when)){
                         Constants.showLog("Give away over");
                         giveAwayLayout.setVisibility(View.GONE);
-                        firebaseActions.loadRecyclerView(databaseReferenceAlbumList,progressBar);
                     }else{
                         giveAwayLayout.setVisibility(View.VISIBLE);
                         giveAwayTitle.setText("Give away on "+when);
                         initiateCounterTimer(when,giveAwayTimer);
-                        firebaseActions.loadRecyclerView(databaseReferenceAlbumList,progressBar);
                     }
-
                 }
             }catch (NullPointerException e){
                 e.printStackTrace();
@@ -101,6 +103,8 @@ public class HomeFragment extends Fragment {
         });
         navigateToWheel.setOnClickListener(v -> startActivity(new Intent(getContext(), LuckyWheel.class)));
     }
+
+
 
     private void initiateCounterTimer(String when, MaterialTextView textView) {
         @SuppressLint("SimpleDateFormat")
