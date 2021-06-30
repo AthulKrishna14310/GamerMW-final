@@ -13,6 +13,7 @@ import android.widget.Toast;
 import com.adefruandta.spinningwheel.SpinningWheelView;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.button.MaterialButton;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -39,6 +40,7 @@ public class LuckyWheel extends AppCompatActivity {
     private String postID;
     private DatabaseReference postReference;
     private DatabaseReference userReference;
+    private MaterialButton startWheel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,12 +54,20 @@ public class LuckyWheel extends AppCompatActivity {
         details= FirebaseDatabase.getInstance().getReference().child("GiveAway");
         postReference=FirebaseDatabase.getInstance().getReference().child("Posts");
         userReference=FirebaseDatabase.getInstance().getReference().child("user");
+        startWheel=findViewById(R.id.startWheel);
     }
 
     @Override
     protected void onStart() {
         super.onStart();
         fetchCommenters();
+        startWheel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                initiateWheel();
+            }
+        });
+
         wheelView.setOnRotationListener(new SpinningWheelView.OnRotationListener<String>() {
             @Override
             public void onRotation() {
@@ -71,12 +81,24 @@ public class LuckyWheel extends AppCompatActivity {
                     public void onComplete(@NonNull @NotNull Task<DataSnapshot> task) {
                         if(task.isSuccessful()){
                             String winnerUser=task.getResult().child("username").getValue().toString();
-                            initiateDialog(winnerUser);
+                            details.child("winner").setValue(winnerUser).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull @NotNull Task<Void> task) {
+                                 if(task.isSuccessful()){
+                                     initiateDialog(winnerUser);
+                                 }else{
+                                   new CustomToast(LuckyWheel.this).showErrorToast(task.getException().getMessage());
+                                 }
+                                }
+                            });
+
+
                         }
                     }
                 });
             }
         });
+
 
     }
 

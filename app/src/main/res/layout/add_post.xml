@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="0dp"
+    style="@style/Platform.MaterialComponents.Light"
+    >
+    <com.google.android.material.progressindicator.LinearProgressIndicator
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/uploadProgress"
+        android:visibility="invisible"
+        android:indeterminate="true"
+    />
+
+    <androidx.appcompat.widget.AppCompatEditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Post Title"
+        android:layout_margin="8dp"
+        android:id="@+id/newPostTitle"
+        android:padding="12dp"
+        />
+
+    <androidx.appcompat.widget.AppCompatEditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Description"
+        android:layout_margin="8dp"
+        android:id="@+id/newDescription"
+        android:padding="12dp"
+        android:inputType="textMultiLine"
+        />
+    <androidx.appcompat.widget.AppCompatEditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Description"
+        android:layout_margin="8dp"
+        android:id="@+id/newYouTubeLink"
+        android:text="https://www.youtube.com/channel/UCy9giK7ZX0NGMb9OkwAY_ng"
+        android:padding="12dp"
+        android:inputType="textMultiLine"
+        />
+    <androidx.appcompat.widget.AppCompatEditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Posted ON"
+        android:layout_margin="8dp"
+        android:id="@+id/postedON"
+        android:padding="12dp"
+        />
+    <com.google.android.material.button.MaterialButton
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Cover Image"
+        android:id="@+id/addNewPostImage"
+        android:layout_margin="8dp"
+        android:padding="12dp"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        />
+
+    <com.google.android.material.button.MaterialButton
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="SUBMIT"
+        android:id="@+id/addNewPost"
+        android:layout_margin="8dp"
+        android:padding="12dp"
+        />
+
+
+
+</androidx.appcompat.widget.LinearLayoutCompat>

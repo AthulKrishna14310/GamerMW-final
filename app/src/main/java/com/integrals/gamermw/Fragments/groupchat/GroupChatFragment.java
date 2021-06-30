@@ -102,8 +102,13 @@ public class GroupChatFragment extends Fragment {
                 }
             }
         });
-        sendImageButton.setOnClickListener(view -> CropImage.activity()
-                .start(requireContext(), fragment));
+        sendImageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                CropImage.activity()
+                        .start(GroupChatFragment.this.requireContext(), fragment);
+            }
+        });
 
         fetchChat();
     }

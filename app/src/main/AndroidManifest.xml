@@ -13,7 +13,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".Activities.WebViewActivity"></activity>
+        <activity android:name=".Activities.AddGiveAway"></activity>
+        <activity android:name=".Activities.WebViewActivity" />
         <activity android:name=".Activities.Tutorial" />
         <activity android:name=".Activities.LuckyWheel" />
         <activity android:name=".Activities.SettingsActivity" />

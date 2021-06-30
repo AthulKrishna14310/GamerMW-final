@@ -115,8 +115,8 @@ public class FirebaseActions {
                         if(snapshot.hasChild("Likes")){
                             likes=String.valueOf(snapshot.child("Likes").getChildrenCount());
                         }
-                        keys.add(snapshot.getKey());
-                        albumModels.add(new AlbumModel(
+                        keys.add(0,snapshot.getKey());
+                        albumModels.add(0,new AlbumModel(
                                 coverPic,
                                 youTubeLink,
                                 publishedON,
@@ -125,6 +125,7 @@ public class FirebaseActions {
                                 snapshot.getKey(),
                                 likes+""
                         ));
+
                     albumAdapter.notifyDataSetChanged();
 
                 }else{

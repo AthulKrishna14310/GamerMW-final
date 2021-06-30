@@ -22,6 +22,16 @@
         android:id="@+id/title"
         style="@style/TextAppearance.MaterialComponents.Headline5"
         />
+    <com.google.android.material.button.MaterialButton
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="START WHEEL"
+        android:id="@+id/startWheel"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        />
     <com.adefruandta.spinningwheel.SpinningWheelView
         android:id="@+id/wheel"
         android:layout_width="272dp"
