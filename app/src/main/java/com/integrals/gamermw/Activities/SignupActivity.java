@@ -3,27 +3,29 @@ package com.integrals.gamermw.Activities;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
-
-import android.app.ProgressDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.RadioGroup;
-import android.widget.Toast;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.integrals.gamermw.Helpers.Constants;
 import com.integrals.gamermw.Helpers.CustomToast;
+import com.integrals.gamermw.Models.Profile;
 import com.integrals.gamermw.R;
+
+import org.jetbrains.annotations.NotNull;
+
+import java.util.ArrayList;
 
 public class SignupActivity extends AppCompatActivity {
 
@@ -31,7 +33,7 @@ public class SignupActivity extends AppCompatActivity {
     private Button btnSignIn, btnSignUp;
     private ProgressBar progressBar;
     private FirebaseAuth auth;
-    private EditText userName;
+    private EditText userNameEditText;
     private RadioGroup radioGroupLastShelter;
     private EditText stateNumber;
     private FirebaseDatabase userInfo;
@@ -42,6 +44,9 @@ public class SignupActivity extends AppCompatActivity {
     private String shelterPlayer;
     private String profilePic= Constants.PROFILE_PIC;
     private boolean checked=false;
+    private ArrayList<String> availableUserNames;
+    private ArrayList<Profile>profileArrayList;
+    private DatabaseReference userReference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,13 +60,15 @@ public class SignupActivity extends AppCompatActivity {
         inputEmail =    findViewById(R.id.email);
         inputPassword = findViewById(R.id.password);
         progressBar =   findViewById(R.id.progressBar);
-        userName=       findViewById(R.id.username);
+        userNameEditText =       findViewById(R.id.username);
         radioGroupLastShelter=findViewById(R.id.radiogroup);
         stateNumber=findViewById(R.id.stateNumber);
     }
     @Override
     protected void onStart() {
         super.onStart();
+        userReference =FirebaseDatabase.getInstance().getReference().child("user");
+
         progressBar.setVisibility(View.GONE);
         btnSignIn.setOnClickListener(v -> {
             finish();
@@ -81,8 +88,7 @@ public class SignupActivity extends AppCompatActivity {
         btnSignUp.setOnClickListener(v -> {
             email = inputEmail.getText().toString().trim();
             password = inputPassword.getText().toString().trim();
-            userNameS=userName.getText().toString().trim();
-
+            userNameS= userNameEditText.getText().toString().trim();
             if(!checked){
                 new CustomToast(getApplicationContext()).showErrorToast("Please check the field");
                 return;
@@ -90,7 +96,6 @@ public class SignupActivity extends AppCompatActivity {
             if(stateNumber.getVisibility()== View.VISIBLE){
                 stateNumberI =stateNumber.getText().toString().trim();
             }
-
             if (TextUtils.isEmpty(email)) {
                 new CustomToast(getApplicationContext()).showErrorToast("Enter Email Address");
                 return;
@@ -112,34 +117,64 @@ public class SignupActivity extends AppCompatActivity {
             }
             progressBar.setVisibility(View.VISIBLE);
             if(auth.getCurrentUser()==null) {
-                auth.createUserWithEmailAndPassword(email, password)
-                        .addOnCompleteListener(SignupActivity.this, new OnCompleteListener<AuthResult>() {
-                            @Override
-                            public void onComplete(@NonNull Task<AuthResult> task) {
-                                if (!task.isSuccessful()) {
-                                    progressBar.setVisibility(View.GONE);
-                                    new CustomToast(getApplicationContext()).showErrorToast("Authentication Failed. Please try again");
-                                } else {
-                                    sentVerificationEmail();
-                                    uploadData();
-                                }
-                            }
-                        });
-                 }
+                ifUserNameExists(userNameS);
+            }
         });
     }
 
-    private void sentVerificationEmail() {
-        auth.getCurrentUser().sendEmailVerification().addOnCompleteListener(new OnCompleteListener<Void>() {
-                @Override
-                public void onComplete(@NonNull Task<Void> task) {
-                    if (task.isSuccessful()) {
-                    } else {
-                        new CustomToast(getApplicationContext()).showErrorToast("Registration Failed. Please try again later.");
-                    }
+    private void ifUserNameExists(String userName) {
+        availableUserNames=new ArrayList<>();
+        profileArrayList=new ArrayList<>();
+        userReference.get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+            @Override
+            public void onComplete(@NonNull @NotNull Task<DataSnapshot> task) {
+                for(DataSnapshot dataSnapshot:task.getResult().getChildren()) {
+                    Profile profile = dataSnapshot.getValue(Profile.class);
+                    profileArrayList.add(profile);
+                    int length = profile.getUsername().indexOf("#");
+                    String userName = profile.getUsername().substring(0, length);
+                    availableUserNames.add(userName);
+                    Constants.showLog(userName);
                 }
-            });
+                if(availableUserNames.contains(userName)){
+                    userNameEditText.setError("Username already exists");
+                    new CustomToast(SignupActivity.this).showErrorToast("User Name already exists");
+                    progressBar.setVisibility(View.GONE);
+                }else{
+                    auth.createUserWithEmailAndPassword(email, password)
+                            .addOnCompleteListener(SignupActivity.this, new OnCompleteListener<AuthResult>() {
+                                @Override
+                                public void onComplete(@NonNull Task<AuthResult> task) {
+                                    if (!task.isSuccessful()) {
+                                        progressBar.setVisibility(View.GONE);
+                                        new CustomToast(getApplicationContext()).showErrorToast(task.getException().getMessage());
+                                    } else {
+                                        sendMailVerification();
+                                        uploadData();
+                                    }
+                                }
+                            });
+
+                    }
+            }
+        });
+
     }
+
+    private void sendMailVerification(){
+        auth.getCurrentUser().sendEmailVerification().addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if (task.isSuccessful()) {
+                } else {
+                    new CustomToast(getApplicationContext()).showErrorToast(task.getException().getMessage());
+                }
+            }
+        });
+
+    }
+
+
     private void uploadData() {
         userInfo.getReference().child("user").child(auth.getCurrentUser().getUid())
                 .child("email").setValue(email)
@@ -152,8 +187,8 @@ public class SignupActivity extends AppCompatActivity {
                                         .addOnCompleteListener(task -> {
                                             if(task.isSuccessful()){
                                                 progressBar.setVisibility(View.GONE);
-                                                new CustomToast(getApplicationContext()).showSuccessToast("Please verify your mail and login again");
-                                                finish();
+                                                new CustomToast(getApplicationContext()).showSuccessToast("Please verify your mail and open app again.");
+                                                finishAffinity();
                                             }else{
                                                 new CustomToast(getApplicationContext()).showErrorToast(task.getException().getMessage());
                                             }

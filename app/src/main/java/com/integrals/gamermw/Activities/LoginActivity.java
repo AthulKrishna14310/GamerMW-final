@@ -28,10 +28,6 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
         auth = FirebaseAuth.getInstance();
-        if (auth.getCurrentUser() != null) {
-            startActivity(new Intent(LoginActivity.this, MainActivity.class));
-            finish();
-        }
         setContentView(R.layout.activity_login);
         inputEmail =    findViewById(R.id.email);
         inputPassword = findViewById(R.id.password);
@@ -39,7 +35,6 @@ public class LoginActivity extends AppCompatActivity {
         btnSignup =     findViewById(R.id.btn_signup);
         btnLogin =      findViewById(R.id.btn_login);
         btnReset =      findViewById(R.id.btn_reset_password);
-        auth = FirebaseAuth.getInstance();
     }
 
     @Override
@@ -48,7 +43,6 @@ public class LoginActivity extends AppCompatActivity {
         progressBar.setVisibility(View.GONE);
         btnSignup.setOnClickListener(v -> startActivity(new Intent(LoginActivity.this, SignupActivity.class)));
         btnReset.setOnClickListener(v -> startActivity(new Intent(LoginActivity.this, ResetPasswordActivity.class)));
-
         btnLogin.setOnClickListener(v -> {
             String email = inputEmail.getText().toString();
             final String password = inputPassword.getText().toString();
@@ -65,6 +59,7 @@ public class LoginActivity extends AppCompatActivity {
                     .addOnCompleteListener(LoginActivity.this, task -> {
                         progressBar.setVisibility(View.GONE);
                         if (!task.isSuccessful()) {
+                            new CustomToast(getApplicationContext()).showErrorToast(task.getException().getMessage());
                             if (password.length() < 6) {
                                 inputPassword.setError(getString(R.string.minimum_password));
                             } else {
@@ -72,7 +67,8 @@ public class LoginActivity extends AppCompatActivity {
                             }
                         }else if (!auth.getCurrentUser().isEmailVerified()){
                             progressBar.setVisibility(View.GONE);
-                        }else {
+                            new CustomToast(getApplicationContext()).showErrorToast("Email not verified");
+                        }else{
                             new CustomToast(getApplicationContext()).showSuccessToast("Successfully logged in ");
                             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                             startActivity(intent);

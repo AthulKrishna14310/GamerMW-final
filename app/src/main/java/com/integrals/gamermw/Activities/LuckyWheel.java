@@ -12,25 +12,25 @@ import android.widget.Toast;
 
 import com.adefruandta.spinningwheel.SpinningWheelView;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.button.MaterialButton;
 import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.integrals.gamermw.Helpers.Constants;
 import com.integrals.gamermw.Helpers.CustomToast;
-import com.integrals.gamermw.MainActivity;
 import com.integrals.gamermw.R;
 import com.thecode.aestheticdialogs.AestheticDialog;
 import com.thecode.aestheticdialogs.DialogAnimation;
 import com.thecode.aestheticdialogs.DialogStyle;
 import com.thecode.aestheticdialogs.DialogType;
 import com.thecode.aestheticdialogs.OnDialogClickListener;
-
 import org.jetbrains.annotations.NotNull;
-
 import java.util.ArrayList;
-import java.util.List;
 
 public class LuckyWheel extends AppCompatActivity {
     private ArrayList<String> commenters;
@@ -41,6 +41,7 @@ public class LuckyWheel extends AppCompatActivity {
     private DatabaseReference postReference;
     private DatabaseReference userReference;
     private MaterialButton startWheel;
+    private boolean initiator=false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,48 +65,89 @@ public class LuckyWheel extends AppCompatActivity {
         startWheel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                initiateWheel();
+                initiator=true;
+                details.child("initiate").setValue("yes")
+                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        Constants.showLog("Initiated Successfully");
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull @NotNull Exception e) {
+                        new CustomToast(getApplicationContext()).showErrorToast(e.getMessage());
+                    }
+                });
             }
         });
 
         wheelView.setOnRotationListener(new SpinningWheelView.OnRotationListener<String>() {
             @Override
             public void onRotation() {
-                Toast.makeText(getApplicationContext(),"Rotating",Toast.LENGTH_SHORT).show();
             }
             @Override
             public void onStopRotation(String item) {
-                Toast.makeText(getApplicationContext()," "+ item,Toast.LENGTH_LONG).show();
-                userReference.child(item).get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull @NotNull Task<DataSnapshot> task) {
-                        if(task.isSuccessful()){
-                            String winnerUser=task.getResult().child("username").getValue().toString();
-                            details.child("winner").setValue(winnerUser).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                @Override
-                                public void onComplete(@NonNull @NotNull Task<Void> task) {
-                                 if(task.isSuccessful()){
-                                     initiateDialog(winnerUser);
-                                 }else{
-                                   new CustomToast(LuckyWheel.this).showErrorToast(task.getException().getMessage());
-                                 }
-                                }
-                            });
+                if(initiator==true) {
+                    userReference.child(item).get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull @NotNull Task<DataSnapshot> task) {
+                            if (task.isSuccessful()) {
+                                String winnerUser = task.getResult().child("username").getValue().toString();
+                                details.child("winner").setValue(winnerUser).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull @NotNull Task<Void> task) {
+                                        if (task.isSuccessful()) {
+                                            Constants.showLog("Winner successfully added");
+                                        } else {
+                                            new CustomToast(LuckyWheel.this).showErrorToast(task.getException().getMessage());
+                                        }
+                                    }
+                                });
 
 
+                            }
                         }
-                    }
-                });
+                    });
+                }
             }
         });
 
+        details.child("initiate").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
+                String result=snapshot.getValue().toString();
+                if(result.contentEquals("yes")){
+                    initiateWheel();
+                }
+            }
 
+            @Override
+            public void onCancelled(@NonNull @NotNull DatabaseError error) {
+
+            }
+        });
+        details.child("winner").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
+                if(snapshot.getValue().toString().contentEquals("")){
+
+                }else {
+                    initiateDialog(snapshot.getValue().toString());
+                }
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull @NotNull DatabaseError error) {
+
+            }
+        });
     }
 
     private void initiateDialog(String winnerUser) {
         new AestheticDialog.Builder(this, DialogStyle.FLAT, DialogType.SUCCESS)
                 .setTitle("Winner "+winnerUser)
-                .setMessage("Message")
+                .setMessage("!!!!!")
                 .setCancelable(false)
                 .setDarkMode(true)
                 .setGravity(Gravity.CENTER)

@@ -16,12 +16,15 @@ import android.widget.EditText;
 import android.widget.Toast;
 import android.widget.Toolbar;
 
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.progressindicator.LinearProgressIndicator;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -32,13 +35,19 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.integrals.gamermw.Helpers.Constants;
 import com.integrals.gamermw.Helpers.CustomToast;
 import com.integrals.gamermw.MainActivity;
 import com.integrals.gamermw.Models.ChatModel;
+import com.integrals.gamermw.Models.Profile;
 import com.integrals.gamermw.R;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 import com.theartofdev.edmodo.cropper.CropImage;
+
+import org.jetbrains.annotations.NotNull;
+
+import java.util.ArrayList;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -58,6 +67,11 @@ public class SettingsActivity extends AppCompatActivity {
     private ExtendedFloatingActionButton updateUserImage;
     private StorageReference storageReference;
     private FirebaseStorage firebaseStorage;
+    private ArrayList<String> availableUserNames;
+    private ArrayList<Profile> profileArrayList;
+    private DatabaseReference userReference;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,6 +80,7 @@ public class SettingsActivity extends AppCompatActivity {
         logoutButton=findViewById(R.id.signoutbtn);
         firebaseAuth=FirebaseAuth.getInstance();
         databaseReference= FirebaseDatabase.getInstance().getReference();
+        userReference=FirebaseDatabase.getInstance().getReference().child("user");
         firebaseStorage=FirebaseStorage.getInstance();
         storageReference=firebaseStorage.getReference().child("messages");
         userId=firebaseAuth.getCurrentUser().getUid();
@@ -77,6 +92,8 @@ public class SettingsActivity extends AppCompatActivity {
         progressIndicator=findViewById(R.id.progress);
         progressIndicator.setVisibility(View.INVISIBLE);
         updateButton.setVisibility(View.INVISIBLE);
+        availableUserNames=new ArrayList<>();
+        profileArrayList=new ArrayList<>();
     }
 
     @Override
@@ -96,8 +113,8 @@ public class SettingsActivity extends AppCompatActivity {
         logoutButton.setOnClickListener(v -> {
             logout();
         });
-
         updateButton.setOnClickListener(v -> updateData());
+
         updateUserImage.setOnClickListener(v -> {
             CropImage.activity().start(SettingsActivity.this);
         });
@@ -135,11 +152,34 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     private void updateData() {
-        databaseReference.child("user").child(userId).child(getString(R.string.dbusername))
-                .setValue(usernameInput.getText().toString()+"#"+stateInput.getText().toString().trim());
         databaseReference.child("user").child(userId).child(getString(R.string.dbstatenumber))
                 .setValue(stateInput.getText().toString().trim() + "");
-        updateButton.setText("Updated");
+        new CustomToast(SettingsActivity.this).showSuccessToast("State updated");
+        progressIndicator.setVisibility(View.VISIBLE);
+        availableUserNames=new ArrayList<>();
+        profileArrayList=new ArrayList<>();
+        userReference.get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+                @Override
+                public void onComplete(@NonNull @NotNull Task<DataSnapshot> task) {
+
+                    for(DataSnapshot dataSnapshot:task.getResult().getChildren()) {
+                        Profile profile = dataSnapshot.getValue(Profile.class);
+                        profileArrayList.add(profile);
+                        int length = profile.getUsername().indexOf("#");
+                        String userName = profile.getUsername().substring(0, length);
+                        availableUserNames.add(userName);
+                        Constants.showLog(userName);
+                    }
+                    if(availableUserNames.contains(usernameInput.getText().toString())){
+                        progressIndicator.setVisibility(View.GONE);
+                        new CustomToast(SettingsActivity.this).showErrorToast("Username already exist , hence not changed");
+                    }else{
+                        databaseReference.child("user").child(userId).child(getString(R.string.dbusername))
+                                .setValue(usernameInput.getText().toString()+"#"+stateInput.getText().toString().trim());
+                        new CustomToast(SettingsActivity.this).showSuccessToast("Username changed");
+                    }
+                }
+            });
     }
 
     private void implementListners() {

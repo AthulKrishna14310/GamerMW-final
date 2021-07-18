@@ -114,8 +114,9 @@ public class HomeFragment extends Fragment {
         giveAwayReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
-                String when= Objects.requireNonNull(Objects.requireNonNull(snapshot.child("when").getValue()).toString());
-                if(isFinished(when)){
+                try {
+                    String when= Objects.requireNonNull(Objects.requireNonNull(snapshot.child("when").getValue()).toString());
+                    if(isFinished(when)){
                     giveAwayLayout.setVisibility(View.GONE);
                     giveAwayResult.setVisibility(View.VISIBLE);
                     String winner=Objects.requireNonNull(Objects.requireNonNull(snapshot.child("winner").getValue()).toString());
@@ -142,6 +143,12 @@ public class HomeFragment extends Fragment {
                     giveAwayTitle.setText("Give away on "+when);
                     initiateCounterTimer(when,giveAwayTimer);
                 }
+
+                }catch (NullPointerException e){
+                    e.printStackTrace();
+                }
+
+
             }
             @Override
             public void onCancelled(@NonNull @NotNull DatabaseError error) {

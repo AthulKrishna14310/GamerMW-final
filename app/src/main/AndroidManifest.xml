@@ -22,6 +22,13 @@
         <activity android:name=".Activities.ResetPasswordActivity" />
         <activity android:name=".Activities.LoginActivity" />
         <activity android:name=".Activities.SignupActivity" />
+        <service
+            android:name=".Helpers.FirebasePushNotificationReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
         <activity
             android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
             android:theme="@style/Base.Theme.AppCompat" />

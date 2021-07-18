@@ -17,6 +17,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.integrals.gamermw.Activities.LoginActivity;
 import com.integrals.gamermw.Activities.SettingsActivity;
+import com.integrals.gamermw.Helpers.CustomToast;
+import com.integrals.gamermw.Helpers.FirebasePushNotificationReceiver;
 import com.squareup.picasso.Picasso;
 import java.util.Objects;
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -47,7 +49,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-
         if(firebaseUser==null) {
             finishAffinity();
             startActivity(new Intent(this, LoginActivity.class));
@@ -56,8 +57,9 @@ public class MainActivity extends AppCompatActivity {
             Objects.requireNonNull(firebaseAuth.getCurrentUser()).reload().addOnCompleteListener(task -> {
                 if(task.isSuccessful()){
                     if(!firebaseAuth.getCurrentUser().isEmailVerified()){
-                        finish();
-                        Toast.makeText(getApplicationContext(),"Please verify your mail and open again",Toast.LENGTH_LONG).show();
+                         finishAffinity();
+                         startActivity(new Intent(MainActivity.this,LoginActivity.class));
+                         new CustomToast(MainActivity.this).showWarningToast("Please verify your mail and open again");
                     }
 
                 }
