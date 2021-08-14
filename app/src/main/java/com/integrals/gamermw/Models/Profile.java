@@ -2,13 +2,13 @@ package com.integrals.gamermw.Models;
 
 public class Profile {
     private String email;
-    private String profilepic;
+    private String profilePic;
     private String username;
     private String statenumber;
 
     public Profile(String email, String profilepic, String username, String statenumber) {
         this.email = email;
-        this.profilepic = profilepic;
+        this.profilePic = profilepic;
         this.username = username;
         this.statenumber = statenumber;
     }
@@ -25,11 +25,11 @@ public class Profile {
     }
 
     public String getProfilepic() {
-        return profilepic;
+        return profilePic;
     }
 
     public void setProfilepic(String profilepic) {
-        this.profilepic = profilepic;
+        this.profilePic = profilepic;
     }
 
     public String getUsername() {

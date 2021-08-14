@@ -41,6 +41,7 @@
             android:src="@drawable/ic_baseline_menu_24"
             android:tint="@color/colorAccent"
             android:background="?selectableItemBackgroundBorderless"
+            android:visibility="gone"
             />
         <RelativeLayout
             android:layout_width="match_parent"

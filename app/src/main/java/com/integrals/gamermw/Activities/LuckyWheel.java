@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import com.adefruandta.spinningwheel.SpinningWheelView;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -61,7 +60,7 @@ public class LuckyWheel extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        fetchCommenters();
+        fetchCommentors();
         startWheel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -160,7 +159,7 @@ public class LuckyWheel extends AppCompatActivity {
                 }).show();
     }
 
-    private void fetchCommenters() {
+    private void fetchCommentors() {
         progressBar.setVisibility(View.VISIBLE);
         details.get().addOnCompleteListener(task -> {
             if(task.isSuccessful()){
@@ -186,6 +185,6 @@ public class LuckyWheel extends AppCompatActivity {
 
     private void initiateWheel() {
         wheelView.setEnabled(false);
-        wheelView.rotate(Constants.MAX_ANGLE, Constants.WHEEL_DURATION, Constants.INTERVELS);
+        wheelView.rotate(Constants.MAX_ANGLE, Constants.WHEEL_DURATION, Constants.INTERVALS);
     }
 }

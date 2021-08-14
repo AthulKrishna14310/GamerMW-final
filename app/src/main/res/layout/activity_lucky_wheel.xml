@@ -30,6 +30,7 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentBottom="true"
         android:layout_marginLeft="16dp"
+        android:visibility="gone"
         android:layout_marginRight="16dp"
         />
     <com.adefruandta.spinningwheel.SpinningWheelView

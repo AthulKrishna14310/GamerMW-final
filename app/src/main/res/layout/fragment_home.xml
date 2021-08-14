@@ -116,6 +116,7 @@
         android:layout_margin="8dp"
         app:backgroundTint="@color/colorPrimary"
         android:id="@+id/addPost"
+        android:visibility="gone"
         />
 
 </RelativeLayout>
